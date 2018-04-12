@@ -1,18 +1,21 @@
-version: '2'
-
+version: '2.2'
 volumes:
-  data:
-  
+  beats-data:
+
 services:
-  registry:
-    image: registry:2
-    restart: unless-stopped
-    ports:
-     - 5000:5000
+  monit:
+    image: docker.elastic.co/beats/metricbeat:6.1.2
     volumes:
-     - data:/var/lib/registry
-    logging:
-      driver: json-file
-      options:
-        max-size: "200k"
-        max-file: "10"
+     - beats-data:/usr/share/metricbeat
+     - /var/run/docker.sock:/var/run/docker.sock
+     - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+     - /proc:/hostfs/proc:ro
+     - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+     - /:/hostfs:ro
+
+    networks:
+     - logs_default
+
+networks:
+  logs_default:
+    external: true
