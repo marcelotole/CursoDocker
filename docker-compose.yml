@@ -1,16 +1,18 @@
 version: '2'
+
 volumes:
-  aula2-logs:
+  data:
+  
 services:
-  aula2:
-    image: oficina-docker:aula2-volumes
-    build: .
-    container_name: aula-2
-    volumes:
-     - aula2-logs:/tmp
-  web:
-    image: nginx
+  registry:
+    image: registry:2
+    restart: unless-stopped
     ports:
-     - "8080:80"
-volumes:
-  aula2-logs:
+     - 5000:5000
+    volumes:
+     - data:/var/lib/registry
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
